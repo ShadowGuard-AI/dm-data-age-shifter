@@ -24,29 +24,31 @@ def setup_argparse():
     parser.add_argument("--date_columns", nargs="+", help="List of column names containing date/time values.  Separate multiple columns with spaces.")
     return parser
 
-def shift_date(date_value, min_days, max_days):
+def pick_column_shift(min_days, max_days):
+    # One shift is picked per column, not per value. Drawing a fresh shift
+    # for every cell moved each date by a different amount, which destroyed
+    # the gaps between rows; the tool promises the opposite, that temporal
+    # relationships survive. A shared shift keeps every interval in the
+    # column exactly as it was, only the whole timeline moves.
+    days_to_shift = random.randint(min_days, max_days)
+    if random.random() < 0.5:
+        days_to_shift = -days_to_shift
+    return days_to_shift
+
+
+def shift_date(date_value, days_to_shift):
     """
-    Shifts a single date/time value by a random number of days.
+    Shifts a single date/time value by an already chosen number of days.
 
     Args:
         date_value (datetime): The date/time value to shift.
-        min_days (int): The minimum number of days to shift.
-        max_days (int): The maximum number of days to shift.
+        days_to_shift (int): The signed shift shared by the whole column.
 
     Returns:
-        datetime: The shifted date/time value, or the original value if it's not a valid date.
+        datetime: The shifted date/time value, or the original value on error.
     """
     try:
-        # Generate a random shift value within the specified range
-        days_to_shift = random.randint(min_days, max_days)
-        
-        # Randomly determine whether to shift forward or backward in time
-        if random.random() < 0.5:
-            days_to_shift = -days_to_shift  # Shift backwards
-        
-        # Shift the date by the random value
-        shifted_date = date_value + timedelta(days=days_to_shift)
-        return shifted_date
+        return date_value + timedelta(days=days_to_shift)
     except Exception as e:
         logging.error(f"Error shifting date: {e}")
         return date_value  # Return the original value on error
@@ -63,8 +65,11 @@ def main():
     output_file = args.output_file
     min_days = args.min_days
     max_days = args.max_days
-    date_columns = args.date_columns
-    
+    # argparse leaves this as None when the flag is absent. Normalise it
+    # here: the warning below promises a no-op run, and iterating None
+    # further down used to crash with a TypeError instead.
+    date_columns = args.date_columns or []
+
     # Input validation
     if not os.path.exists(input_file):
         logging.error(f"Input file not found: {input_file}")
@@ -98,8 +103,10 @@ def main():
             logging.error(f"Error converting column '{col}' to datetime: {e}. Skipping.")
             continue
 
-        # Shift the date/time values in the specified column
-        df[col] = df[col].apply(lambda x: shift_date(x, min_days, max_days) if pd.notnull(x) else x) # Only shift if not NaN
+        # Every value in the column moves by this one shift, so the gaps
+        # between dates in the column are unchanged after masking.
+        column_shift = pick_column_shift(min_days, max_days)
+        df[col] = df[col].apply(lambda x: shift_date(x, column_shift) if pd.notnull(x) else x) # Only shift if not NaN
 
     try:
         # Write the modified DataFrame to a new CSV file

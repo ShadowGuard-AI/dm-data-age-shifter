@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import timedelta
 import os
 import sys
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -18,22 +19,19 @@ def setup_argparse():
     """
     parser = argparse.ArgumentParser(description="Shifts date and time fields in a dataset by a random interval within a specified range, preserving temporal relationships.")
     parser.add_argument("input_file", help="Path to the input CSV file.")
-    parser.add_argument("output_file", help="Path to the output CSV file.")
-    parser.add_argument("--min_days", type=int, default=0, help="Minimum number of days to shift the dates by. Defaults to 0.")
-    parser.add_argument("--max_days", type=int, default=365, help="Maximum number of days to shift the dates by. Defaults to 365.")
+    parser.add_argument("output_file", help="Path to the output CSV file. It must not resolve to the input file.")
+    parser.add_argument("--min_days", type=int, default=0, help="Minimum signed number of days to shift the dates by. Defaults to 0.")
+    parser.add_argument("--max_days", type=int, default=365, help="Maximum signed number of days to shift the dates by. Defaults to 365.")
     parser.add_argument("--date_columns", nargs="+", help="List of column names containing date/time values.  Separate multiple columns with spaces.")
     return parser
 
-def pick_column_shift(min_days, max_days):
-    # One shift is picked per column, not per value. Drawing a fresh shift
-    # for every cell moved each date by a different amount, which destroyed
-    # the gaps between rows; the tool promises the opposite, that temporal
-    # relationships survive. A shared shift keeps every interval in the
-    # column exactly as it was, only the whole timeline moves.
-    days_to_shift = random.randint(min_days, max_days)
-    if random.random() < 0.5:
-        days_to_shift = -days_to_shift
-    return days_to_shift
+def pick_run_shift(min_days, max_days):
+    # One shift is picked for the whole run, not per value and not per
+    # column. A shared shift keeps every interval exactly as it was, within
+    # each column and between columns; only the whole timeline moves. The
+    # signed shift is drawn directly from the range the operator set, with
+    # no sign flip, so it always stays inside --min_days to --max_days.
+    return random.randint(min_days, max_days)
 
 
 def shift_date(date_value, days_to_shift):
@@ -42,7 +40,7 @@ def shift_date(date_value, days_to_shift):
 
     Args:
         date_value (datetime): The date/time value to shift.
-        days_to_shift (int): The signed shift shared by the whole column.
+        days_to_shift (int): The signed shift shared by the whole run.
 
     Returns:
         datetime: The shifted date/time value, or the original value on error.
@@ -78,6 +76,10 @@ def main():
     if min_days > max_days:
         logging.error("Minimum days must be less than or equal to maximum days.")
         sys.exit(1)
+
+    if Path(input_file).resolve() == Path(output_file).resolve():
+        logging.error("Error: Output file cannot be the same file as the input file.")
+        sys.exit(1)
     
     if not date_columns:
         logging.warning("No date columns specified.  The script will run, but no dates will be shifted.")
@@ -89,24 +91,48 @@ def main():
         logging.error(f"Error reading CSV file: {e}")
         sys.exit(1)
     
+    # Every named column must exist. A run that shifts nothing must not
+    # report success or write a verbatim copy of the input.
+    missing_columns = [col for col in date_columns if col not in df.columns]
+    if missing_columns:
+        logging.error(
+            "Error: Date column(s) not found in the input: "
+            + ", ".join(missing_columns)
+            + ". No dates were shifted."
+        )
+        sys.exit(1)
+
+    # One shift for the whole run, applied to every named date column.
+    run_shift = pick_run_shift(min_days, max_days) if date_columns else 0
+    if date_columns:
+        logging.info(f"Applying a shift of {run_shift} days to all date columns: {', '.join(date_columns)}")
+
     # Process each specified date column
     for col in date_columns:
-        if col not in df.columns:
-            logging.warning(f"Column '{col}' not found in the DataFrame. Skipping.")
-            continue
-
-        # Attempt to convert the column to datetime objects.  Handle errors gracefully.
+        # Convert the column to datetime objects. A non-empty value that
+        # does not parse must not be silently blanked: count such values
+        # and refuse the run before any output is written. Empty cells
+        # stay empty.
+        original = df[col]
         try:
-             df[col] = pd.to_datetime(df[col], errors='coerce') # Coerce invalid parsing into NaT.
-             logging.info(f"Successfully converted column '{col}' to datetime objects.")
+             converted = pd.to_datetime(original, errors='coerce')
         except Exception as e:
-            logging.error(f"Error converting column '{col}' to datetime: {e}. Skipping.")
-            continue
+            logging.error(f"Error converting column '{col}' to datetime: {e}.")
+            sys.exit(1)
+        bad_mask = converted.isna() & original.notna() & (original.astype(str).str.strip() != "")
+        bad_count = int(bad_mask.sum())
+        if bad_count:
+            bad_rows = [int(pos) + 2 for pos in list(df.index[bad_mask])]
+            logging.error(
+                f"Error: Column '{col}' has {bad_count} non-empty value(s) that do not parse "
+                f"as dates, at CSV row(s): {', '.join(str(n) for n in bad_rows)}. "
+                "Refusing to blank them."
+            )
+            sys.exit(1)
+        df[col] = converted
+        logging.info(f"Successfully converted column '{col}' to datetime objects.")
 
-        # Every value in the column moves by this one shift, so the gaps
-        # between dates in the column are unchanged after masking.
-        column_shift = pick_column_shift(min_days, max_days)
-        df[col] = df[col].apply(lambda x: shift_date(x, column_shift) if pd.notnull(x) else x) # Only shift if not NaN
+        df[col] = df[col].apply(lambda x: shift_date(x, run_shift) if pd.notnull(x) else x) # Only shift if not NaN
 
     try:
         # Write the modified DataFrame to a new CSV file

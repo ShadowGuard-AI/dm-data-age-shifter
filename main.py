@@ -31,6 +31,9 @@ def pick_run_shift(min_days, max_days):
     # each column and between columns; only the whole timeline moves. The
     # signed shift is drawn directly from the range the operator set, with
     # no sign flip, so it always stays inside --min_days to --max_days.
+    # There is no seed flag anywhere in this tool, so the draw cannot
+    # be repeated: the only record of which shift a run used is the
+    # log line in main, and rerunning gives a different timeline.
     return random.randint(min_days, max_days)
 
 
@@ -122,6 +125,10 @@ def main():
         bad_mask = converted.isna() & original.notna() & (original.astype(str).str.strip() != "")
         bad_count = int(bad_mask.sum())
         if bad_count:
+            # The +2 turns a zero based position into a CSV line number
+            # (one for the header, one for one based counting). It is
+            # only right while the frame index is the default position
+            # index read_csv produced, which holds for this main flow.
             bad_rows = [int(pos) + 2 for pos in list(df.index[bad_mask])]
             logging.error(
                 f"Error: Column '{col}' has {bad_count} non-empty value(s) that do not parse "
@@ -136,6 +143,10 @@ def main():
 
     try:
         # Write the modified DataFrame to a new CSV file
+        # Dates are written in the pandas default datetime form, not
+        # in the form they were read in: a column of 31/01/2024 style
+        # values comes back as ISO timestamps with a midnight time
+        # attached. The values are right; the format is not preserved.
         df.to_csv(output_file, index=False)
         logging.info(f"Successfully shifted dates and saved to {output_file}")
     except Exception as e:

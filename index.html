@@ -1,164 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dm Data Age Shifter: what it is, how it runs, where it stops</title>
-<meta name="description" content="Dm Data Age Shifter is one of my projects. The README in the repo is short, so this page sticks to what the files themselves show.">
-<style>
-:root {
-  --bg: #121418; --panel: #1c2028; --ink: #e8ecf0;
-  --mut: #252b36;
-  --acc: #5cc8e0; --acc2: #f0a05c;
-  --line: #1c2028;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink);
-  font-family: Georgia, 'Times New Roman', serif; line-height: 1.55; }
-code, pre, .mono { font-family: 'Courier New', monospace; }
-a { color: var(--acc2); }
-.hero { padding: 3rem 6vw 1rem; }
-.hero img.banner { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; }
-.logo { width: 92px; height: 92px; border-radius: 18px;
-  border: 1px solid var(--line); }
-h1 { font-size: 2.4rem; margin: 0.4em 0 0.1em; }
-h2 { border-bottom: 2px solid var(--acc); padding-bottom: 0.2em;
-  margin-top: 2em; }
-.lede { font-size: 1.15rem; max-width: 62ch; }
-main { padding: 0 6vw 3rem; max-width: 1180px; margin: 0 auto; }
-.grid { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-.card { background: var(--panel); border: 1px solid var(--line);
-  border-radius: 12px; padding: 1rem 1.2rem; }
-.card.pop { animation: rise 0.7s ease both; }
-@keyframes rise { from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; } }
-pre.code { background: #101014; color: #e8e6df; padding: 1rem 1.2rem;
-  border-radius: 12px; overflow-x: auto; font-size: 0.86rem;
-  border-left: 5px solid var(--acc); }
-table { border-collapse: collapse; width: 100%; }
-td, th { border-bottom: 1px solid var(--line); padding: 0.45rem 0.6rem;
-  text-align: left; }
-.shots { display: grid; gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-.shots img { width: 100%; height: auto; border: 1px solid var(--line);
-  border-radius: 10px; background: #f4f1e8; }
-footer { padding: 2rem 6vw; border-top: 1px solid var(--line);
-  color: var(--mut); }
-.rail { display: flex; gap: 1.2rem; align-items: flex-start; }
-.rail nav { position: sticky; top: 1rem; min-width: 180px; }
-@media (max-width: 760px) { .rail { flex-direction: column; }
-  .rail nav { position: static; } }
-@media (prefers-reduced-motion: reduce) {
-  .card.pop { animation: none; } * { scroll-behavior: auto; } }
-</style>
-</head>
-<body class="layout-grid">
-<!-- This page exists for dm-data-age-shifter alone: the layout (console-grid),
-     the colors, and the type were picked for this project, not
-     shared with the other project pages. The code block below is
-     copied from the file it names, line for line. If it looks
-     plain, that is because the project is plain, and I would
-     rather the page match the project than dress it up. The one
-     thing I will not do here is oversell: what this project does
-     not do is stated on the page, not hidden from it. -->
-<header class="hero">
-  <img class="logo" src="assets/logo.png" alt="Dm Data Age Shifter logo">
-  <img class="banner" src="assets/banner.png" alt="">
-  <h1>Dm Data Age Shifter</h1>
-  <p class="mono"><a href="https://github.com/ShadowGuard-AI/dm-data-age-shifter">github.com/ShadowGuard-AI/dm-data-age-shifter</a></p>
-</header>
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>dm-data-age-shifter: The Zine Table at the Copy Shop</title>
+<style>@font-face{font-family:Disp;src:url("fonts/BubblerOne.ttf")}@font-face{font-family:Text;src:url("fonts/AlegreyaSans.ttf")}
+body{background:#a8a49a;font-family:Text,sans-serif;color:#242220;margin:0;border-left:26px solid #a8845c}main{max-width:920px;margin:0 auto;padding:28px}
+h1,h2,h3{font-family:Disp,serif;color:#1c1a18}section{background:#d8d3c6;padding:18px 22px;margin:16px 0;border:1px solid #1c1a18}
+.num{color:#b22c26;font-family:Disp,serif}img{max-width:100%}button{background:#d8d3c6;color:#1c1a18;border:2px solid #1c1a18;border-radius:0;padding:14px 20px;margin:4px;font-family:Disp,serif}
+button:focus{outline:3px double #b22c26}pre{white-space:pre-wrap;font-family:Text,sans-serif}.note{border-left:4px solid #b22c26;padding-left:10px}</style></head><body><main>
+<img src="intro-banner.png" alt="Introduction banner: the zine table under window light, no writing anywhere">
+<h1>dm-data-age-shifter: The Zine Table at the Copy Shop</h1>
+<img src="logo.png" alt="Logo: a long arm stapler over a folded sheet"><img src="banner.png" alt="Wordmark banner: the zine table after hours">
+<img src="scene.svg" alt="Animated scene in three bands">
+<div><button type="button">Shift Every Named Date</button></div>
+<p>Earliest Shift, in Days. Latest Shift, in Days. Date Columns, Separated by Spaces.</p>
+<h3>One Draw for the Whole Run</h3><h3>Gaps Do Not Move</h3><h3>Refusals End the Run</h3><h3>Warnings Do Not</h3>
+<section><h2><span class="num">Sheet one:</span> the job</h2><p>This program moves dates. It takes a CSV file, chooses one signed whole number of days from inside a range the caller sets, and adds that same number to every value in every date column the caller names. Every gap survives untouched: the distance between two dates in the output is exactly the distance in the input, because both were carried by the same amount.</p></section>
+<section><h2><span class="num">Sheet two:</span> the true working call</h2><p>python3 main.py, then the input CSV path, then the output CSV path, then the flag for date columns followed by one or more column names. Written with placeholders only: python3 main.py INPUT_CSV OUTPUT_CSV --date_columns COLUMN_NAME COLUMN_NAME. No real file, no real column from anyone's data, and no real date appears anywhere on this page.</p></section>
+<section><h2><span class="num">Sheet three:</span> install, fixed and said so</h2><p>git clone https://github.com/ShadowGuard-AI/dm-data-age-shifter</p><p class="note">Red pencil note: this clone line is fixed on this site. The README prints a different organisation name altogether, and this site does not repeat it here.</p></section>
+<section><h2><span class="num">Sheet four:</span> the controls, in parser order</h2><p>Help flag first, the automatic one. Input file, positional. Output file, positional, carrying its refusal beside it: an output path that resolves to the input file is refused, exit 1, before any writing. Minimum days, an integer, default 0. Maximum days, an integer, default 365. Date columns, one or more names given after the flag, separated by spaces.</p></section>
+<section><h2><span class="num">Sheet five:</span> the single draw, at full size</h2><p>One shift is picked per run, never one per column and never one per row. It is drawn from the caller's range exactly as set, sign included, with no quiet flipping of negative ranges into positive ones. The chosen number of days is written to the log.</p><p>Beside this, in equal size, the hard limit: the program has no seed control of any kind, so no run can be repeated on demand. The log line is the only record of what a given run did.</p></section>
+<section><h2><span class="num">Sheet six:</span> refusal and warning, kept separate</h2><p>A named column that does not exist in the file ends the run at exit 1, and no output is written. A non empty value in a named column that will not parse as a date ends the run at exit 1, naming the column, the count of bad values, and the CSV rows they sit on. Empty cells are allowed to stay empty. By contrast, naming no date columns at all only draws a warning: the run continues, writes an output file whose dates are unchanged, and reports success.</p></section>
+<section><h2><span class="num">Sheet seven:</span> format honesty</h2><p>Dates come out in the pandas default datetime form, not in the shape they went in. A column written day first in the input returns as ISO timestamps with a midnight time attached. The values are correct. The presentation is not preserved. That is stated plainly here, with no example date printed.</p></section>
+<section><h2><span class="num">Sheet eight:</span> requirements and endings</h2><p>The requirements file names pandas at 2.1.0 or later, and nothing else. A missing input file ends the run at exit 1. A minimum set above the maximum ends it at exit 1. A file the reader cannot parse ends it at exit 1. A successful run ends by logging where the shifted output was saved. One more fact belongs on this sheet: the file is always read as if its first row were a header, with no flag to say otherwise.</p></section>
+<section><h2>Closing sheet: licence</h2><p>Copyright (c) ShadowGuard-AI</p><p class="note">That line prints the README licence line with the organisation corrected to the hyphenated form, and the change is labelled here as a correction made on the site.</p><p>Next to it, a separate fact. The repository LICENSE file contains the MIT License. Its holder line gives the pen name in full, then a parenthetical given name with a single initial, then the account handle. The line is not reproduced here, and the initial is not expanded.</p></section>
+<section><h2>The preserved README record</h2><pre>![Banner](banner.png)
 
-<main>
-  <section class="rail">
-    <nav aria-label="on this page">
-      <p class="mono"><a href="#run">Run it</a><br>
-      <a href="#files">The files</a><br>
-      <a href="#sheets">The sheets</a><br>
-      <a href="https://github.com/ShadowGuard-AI/dm-data-age-shifter">The repo</a></p>
-    </nav>
-    <div>
-      <p class="lede">Dm Data Age Shifter is one of my projects. The README in the repo is short, so this page sticks to what the files themselves show.</p>
-      <div class="grid">
-        <div class="card pop"><h3>What it is</h3>
-          <p>Dm Data Age Shifter: 3 files, 131 counted
-          lines across Python 113, Markdown 17, Text 1. One job, done in the
-          open, in files you can read.</p></div>
-        <div class="card pop"><h3>The biggest piece</h3>
-          <p><code>main.py</code> carries the most
-          lines. If the project grows, that file is where the growth
-          lands first, for better or worse.</p></div>
-        <div class="card pop"><h3>The honest gap</h3>
-          <p>No test files yet. That is the honest gap, and the roadmap in the visuals folder says what the first one should cover.</p></div>
-      </div>
-      <section id="run">
-        <h2>Run it</h2>
-        <p>The repo README has the exact commands for this one. The
-        shape is the shape for most of my projects: clone it, read the
-        top file first so you know what will happen, then run it on
-        something you do not mind breaking.</p>
-        <p class="mono">$ git clone https://github.com/ShadowGuard-AI/dm-data-age-shifter.git<br>$ cd dm-data-age-shifter</p>
-      </section>
-      
-  <section aria-label="real code">
-    <h2>The code, as it sits in the repo</h2>
-    <p>From <code>main.py</code>, line 10 on. I did
-    not tidy it for the page. What you see is what the file has.</p>
-    <pre class="code"><code>logging.basicConfig(level=logging.INFO, format=&#x27;%(asctime)s - %(levelname)s - %(message)s&#x27;)
+# dm-data-age-shifter
+Shifts date and time fields in a dataset by a random interval within a specified range, preserving temporal relationships. One shift is drawn for the whole run and applied to every named date column, so gaps within a column and between columns are preserved. The signed shift is drawn from --min_days to --max_days as set, with no sign flip, and the applied shift is logged. - Focused on Tools designed to generate or mask sensitive data with realistic-looking but meaningless values
 
-def setup_argparse():
-    &quot;&quot;&quot;
-    Sets up the argument parser for the data age shifter tool.
+## Install
+`git clone https://github.com/ShadowStrikeHQ/dm-data-age-shifter`
 
-    Returns:
-        argparse.ArgumentParser: The argument parser object.
-    &quot;&quot;&quot;
-    parser = argparse.ArgumentParser(description=&quot;Shifts date and time fields in a dataset by a random interval within a specified range, preserving temporal relationships.&quot;)
-    parser.add_argument(&quot;input_file&quot;, help=&quot;Path to the input CSV file.&quot;)
-    parser.add_argument(&quot;output_file&quot;, help=&quot;Path to the output CSV file.&quot;)
-    parser.add_argument(&quot;--min_days&quot;, type=int, default=0, help=&quot;Minimum number of days to shift the dates by. Defaults to 0.&quot;)
-    parser.add_argument(&quot;--max_days&quot;, type=int, default=365, help=&quot;Maximum number of days to shift the dates by. Defaults to 365.&quot;)
-    parser.add_argument(&quot;--date_columns&quot;, nargs=&quot;+&quot;, help=&quot;List of column names containing date/time values.  Separate multiple columns with spaces.&quot;)
-    return parser
+## Usage
+`./dm-data-age-shifter [params]`
 
-def shift_date(date_value, min_days, max_days):
-    &quot;&quot;&quot;
-    Shifts a single date/time value by a random number of days.
+## Parameters
+- `-h`: Show help message and exit
+- `input_file`: Path to the input CSV file
+- `output_file`: Path to the output CSV file. It must not be the input file: if the output path resolves to the input file, the run refuses and exits 1 before any write.
+- `--min_days`: Minimum signed number of days to shift the dates by. Defaults to 0.
+- `--max_days`: Maximum signed number of days to shift the dates by. Defaults to 365.
+- `--date_columns`: List of column names containing date/time values.  Separate multiple columns with spaces.
 
-    Args:</code></pre>
-  </section>
-      <section id="files">
-        <h2>The files that matter</h2>
-        <table><tr><th>File</th><th>Lines</th></tr>
-        <tr><td><code>main.py</code></td><td>113</td></tr>
-        <tr><td><code>README.md</code></td><td>17</td></tr>
-        <tr><td><code>requirements.txt</code></td><td>1</td></tr>
-        </table>
-        <p>Names doing the work: <span class="mono">setup_argparse, shift_date, main</span>.</p>
-      </section>
-      <section id="sheets">
-        <h2>Drawn by hand</h2>
-        <p>I sketch my projects on notebook paper so I have to
-        understand them well enough to draw them. The full set,
-        with the counts and how they were counted, is the
-        <a href="https://github.com/ShadowGuard-AI/dm-data-age-shifter/tree/main/dm-data-age-shifter-Visuals">dm-data-age-shifter-Visuals</a>
-        folder in the repo. Nothing is drawn over the binder holes.
-        That is a rule, not a style.</p>
-        <div class="shots">
-          <img src="assets/architecture.png" alt="Hand drawn architecture sheet for Dm Data Age Shifter">
-          <img src="assets/flowchart.png" alt="Hand drawn flowchart sheet for Dm Data Age Shifter">
-          <img src="assets/product-map.png" alt="Hand drawn product map sheet for Dm Data Age Shifter">
-        </div>
-      </section>
-    </div>
-  </section>
-</main>
-<footer>
-  <p>Dm Data Age Shifter is one of my projects. This page was written
-  from the repo itself on 2026-10-30: the counts are the
-  repo's counts, the code is the repo's code, and the gaps are the
-  repo's gaps.</p>
-</footer>
-</body>
-</html>
+## Failure rules
+- If any named date column is not found, the run exits 1 and writes no output. With no --date_columns at all, the run still logs a warning that no dates will be shifted.
+- A non-empty value in a named date column that does not parse as a date refuses the run: the run exits 1 naming the column, the count, and the CSV rows, instead of blanking the value. Empty cells may remain empty.
+
+## License
+Copyright (c) ShadowStrikeHQ</pre></section>
+</main></body></html>

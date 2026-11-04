@@ -18,12 +18,12 @@ Shifts date and time fields in a dataset by a random interval within a specified
 ![Major separator](sep-heavy.svg)
 
 ## Install
-`git clone https://github.com/ShadowStrikeHQ/dm-data-age-shifter`
+`git clone https://github.com/ShadowGuard-AI/dm-data-age-shifter`
 
 ![Minor separator](sep-light.svg)
 
 ## Usage
-`./dm-data-age-shifter [params]`
+`python3 main.py input_file output_file [options]`
 
 > Colophon slip: there is no seed, so no shift can be drawn twice. The log line is the only record of what a given run did.
 
@@ -52,7 +52,7 @@ Shifts date and time fields in a dataset by a random interval within a specified
 ![Minor separator](sep-light.svg)
 
 ## License
-Copyright (c) ShadowStrikeHQ
+This project is released under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ![Major separator](sep-heavy.svg)
 
